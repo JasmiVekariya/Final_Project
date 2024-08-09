@@ -13,16 +13,20 @@ DESCRIPTION   : The below program delineates the code which calculates the diffe
 
 #define HASH_TABLE_SIZE 127
 
-struct Parcel 
+typedef struct Parcel 
 {
     char* destination;
     int weight;
     float value;
     Parcel* left;
     Parcel* right;
-};
+} Parcel;
 
-struct HashTableEntry 
-{
-    Parcel* root;
-};
+unsigned long djb2(char* str);
+void insertTheParcel(Parcel** root, char* destination, int weight, float value);
+void displayTheParcel(Parcel* root);
+void displayTheParcelsByWeight(Parcel* root, int weight, int higher);
+void displayTheTotalLoadAndValuation(Parcel* root, int* totalWeight, float* totalValue);
+void displayTheCheapestAndMostExpensive(Parcel* root, Parcel** cheapest, Parcel** expensive);
+void displayTheLightestAndHeaviest(Parcel* root, Parcel** lightest, Parcel** heaviest);
+void freeTheTree(Parcel* root);
