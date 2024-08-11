@@ -31,6 +31,64 @@ void displayTheCheapestAndMostExpensive(Parcel* root, Parcel** cheapest, Parcel*
 void displayTheLightestAndHeaviest(Parcel* root, Parcel** lightest, Parcel** heaviest);
 void freeTheTree(Parcel* root);
 
+unsigned long djb2(char* str) 
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while ((c = *str++)) 
+    {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
+}
+
+void insertTheParcel(Parcel** root, char* destination, int weight, float value) 
+{
+    if (*root == NULL) 
+    {
+        *root = (Parcel*)malloc(sizeof(Parcel));
+        (*root)->destination = strdup(destination);
+        (*root)->weight = weight;
+        (*root)->value = value;
+        (*root)->left = (*root)->right = NULL;
+    }
+
+    else if (weight < (*root)->weight) 
+    {
+        insertTheParcel(&(*root)->left, destination, weight, value);
+    }
+
+    else 
+    {
+        insertTheParcel(&(*root)->right, destination, weight, value);
+    }
+}
+
+void displayTheParcel(Parcel* root) 
+{
+    if (root != NULL) 
+    {
+        displayTheParcel(root->left);
+        printf("Destination: %s, Weight: %d, Value: %.2f\n", root->destination, root->weight, root->value);
+        displayTheParcel(root->right);
+    }
+}
+
+void displayTheParcelsByWeight(Parcel* root, int weight, int higher) 
+{
+    if (root != NULL) 
+    {
+        displayTheParcelsByWeight(root->left, weight, higher);
+        if ((higher && root->weight > weight) || (!higher && root->weight < weight)) 
+        {
+            printf("Destination: %s, Weight: %d, Value: %.2f\n", root->destination, root->weight, root->value);
+        }
+
+        displayTheParcelsByWeight(root->right, weight, higher);
+    }
+}
+
 void displayTheTotalLoadAndValuation(Parcel* root, int* totalWeight, float* totalValue) 
 {
     if (root != NULL) 
