@@ -10,7 +10,9 @@ DESCRIPTION   : The below program delineates the code which calculates the diffe
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#pragma warning (disable : 4996)
 
+#define MAX_COUNTRY_NAME_LENGTH 21
 #define HASH_TABLE_SIZE 127
 
 typedef struct Parcel
@@ -24,7 +26,7 @@ typedef struct Parcel
 
 unsigned long djb2(char* str);
 void insertTheParcel(Parcel** root, char* destination, int weight, float value);
-void displayTheParcel(Parcel* root);
+void displayTheParcels(Parcel* root);
 void displayTheParcelsByWeight(Parcel* root, int weight, int higher);
 void displayTheTotalLoadAndValuation(Parcel* root, int* totalWeight, float* totalValue);
 void displayTheCheapestAndMostExpensive(Parcel* root, Parcel** cheapest, Parcel** expensive);
@@ -39,11 +41,11 @@ int main(void)
 
     if (!file)
     {
-        printf("Error opening file.\n");
+        printf("Error in opening the couriers.txt file.\n");
         return 1;
     }
 
-    char destination[21];
+    char destination[MAX_COUNTRY_NAME_LENGTH];
     int weight;
     float value;
 
@@ -56,7 +58,7 @@ int main(void)
     fclose(file);
 
     int choice;
-    char country[21];
+    char country[MAX_COUNTRY_NAME_LENGTH];
     char input[100];
     int searchWeight;
 
@@ -74,14 +76,34 @@ int main(void)
         choice = atoi(input);
 
         unsigned long hashIndex = 0;
-        switch (choice) {
+        switch (choice) 
+        {
         case 1:
         {
-            printf("Enter country name: ");
+            printf("Enter the country name to search for parcels: ");
             fgets(country, sizeof(country), stdin);
             country[strcspn(country, "\n")] = 0;
             hashIndex = djb2(country) % HASH_TABLE_SIZE;
-            displayTheParcel(hashTable[hashIndex]);
+            bool parcelFound = false;
+
+            for (int i = 0; i < HASH_TABLE_SIZE; i++)
+            {
+                Parcel* test = hashTable[i];
+                if (test != NULL)
+                {
+                    if (strstr(test->destination, country))
+                    {
+                        displayTheParcels(hashTable[hashIndex]);
+                        parcelFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!parcelFound)
+            {
+                printf("The country name %s is not found in the list.\n", country);
+            }
+            // displayParcels(hashTable[hashIndex]);
             break;
         }
         case 2:
@@ -89,16 +111,68 @@ int main(void)
             printf("Enter country name: ");
             fgets(country, sizeof(country), stdin);
             country[strcspn(country, "\n")] = 0;
+
+            bool parcelFound = false;
+
+            for (int i = 0; i < HASH_TABLE_SIZE; i++) 
+            {
+                Parcel* test = hashTable[i];
+                if (test != NULL) 
+                {
+                    // printf("%s\n", test->destination);
+                    if (strstr(test->destination, country)) 
+                    {
+                        // displayParcels(hashTable[hashIndex]);
+                        parcelFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!parcelFound) 
+            {
+                printf("The country name %s is not found in the list.\n", country);
+                break;
+            }
+
             printf("Enter weight: ");
             fgets(input, sizeof(input), stdin);
             searchWeight = atoi(input);
+
+            unsigned long hashIndex = 0;
             hashIndex = djb2(country) % HASH_TABLE_SIZE;
-            displayTheParcelsByWeight(hashTable[hashIndex], searchWeight, 1); // Assuming higher weights
+
+            printf("Choose from the following teo options:\n");
+            printf("1. View Parcels with more weight than the entered weight.\n");
+            printf("2. View Parcels with less weight than the entered weight.\n");
+
+            printf("Enter your choice: ");
+            fgets(input, sizeof(input), stdin);
+            choice = atoi(input);
+
+            switch (choice) 
+            {
+            case 1:
+            {
+                displayTheParcelsByWeight(hashTable[hashIndex], searchWeight, 1); // Assuming higher weights
+                break;
+            }
+            case 2:
+            {
+                displayTheParcelsByWeight(hashTable[hashIndex], searchWeight, 0); // Assuming lower weights
+                break;
+            }
+            default:
+            {
+                printf("Invalid choice.\n");
+                break;
+            }
+            }
+
             break;
         }
         case 3:
         {
-            printf("Enter country name: ");
+            printf("Enter the country name to search for parcels: ");
             fgets(country, sizeof(country), stdin);
             country[strcspn(country, "\n")] = 0;
             hashIndex = djb2(country) % HASH_TABLE_SIZE;
@@ -110,13 +184,14 @@ int main(void)
         }
         case 4:
         {
-            printf("Enter country name: ");
+            printf("Enter the country name to search for parcels: ");
             fgets(country, sizeof(country), stdin);
             country[strcspn(country, "\n")] = 0;
             hashIndex = djb2(country) % HASH_TABLE_SIZE;
             Parcel* cheapest = NULL, * expensive = NULL;
             displayTheCheapestAndMostExpensive(hashTable[hashIndex], &cheapest, &expensive);
-            if (cheapest && expensive) {
+            if (cheapest && expensive) 
+            {
                 printf("Cheapest: %s, %d, %.2f\n", cheapest->destination, cheapest->weight, cheapest->value);
                 printf("Most Expensive: %s, %d, %.2f\n", expensive->destination, expensive->weight, expensive->value);
             }
@@ -124,21 +199,24 @@ int main(void)
         }
         case 5:
         {
-            printf("Enter country name: ");
+            printf("Enter the country name to search for parcels: ");
             fgets(country, sizeof(country), stdin);
             country[strcspn(country, "\n")] = 0;
             hashIndex = djb2(country) % HASH_TABLE_SIZE;
             Parcel* lightest = NULL, * heaviest = NULL;
             displayTheLightestAndHeaviest(hashTable[hashIndex], &lightest, &heaviest);
-            if (lightest && heaviest) {
+            if (lightest && heaviest) 
+            {
                 printf("Lightest: %s, %d, %.2f\n", lightest->destination, lightest->weight, lightest->value);
                 printf("Heaviest: %s, %d, %.2f\n", heaviest->destination, heaviest->weight, heaviest->value);
             }
             break;
         }
         case 6:
-            for (int i = 0; i < HASH_TABLE_SIZE; ++i) {
-                if (hashTable[i]) {
+            for (int i = 0; i < HASH_TABLE_SIZE; ++i) 
+            {
+                if (hashTable[i]) 
+                {
                     freeTheTree(hashTable[i]);
                 }
             }
@@ -168,7 +246,8 @@ void insertTheParcel(Parcel** root, char* destination, int weight, float value)
 {
     if (*root == NULL) 
     {
-        *root = (Parcel*)malloc(sizeof(Parcel));
+       // *root = (Parcel*)malloc(sizeof(Parcel));
+        *root = new Parcel;
         (*root)->destination = strdup(destination);
         (*root)->weight = weight;
         (*root)->value = value;
@@ -186,13 +265,13 @@ void insertTheParcel(Parcel** root, char* destination, int weight, float value)
     }
 }
 
-void displayTheParcel(Parcel* root) 
+void displayTheParcels(Parcel* root) 
 {
     if (root != NULL) 
     {
-        displayTheParcel(root->left);
+        displayTheParcels(root->left);
         printf("Destination: %s, Weight: %d, Value: %.2f\n", root->destination, root->weight, root->value);
-        displayTheParcel(root->right);
+        displayTheParcels(root->right);
     }
 }
 
