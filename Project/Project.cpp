@@ -316,6 +316,13 @@ int main(void)
     return 0;
 }
 
+/*
+FUNCTION    : unsigned long djb2()
+DESCRIPTION : This function computes the hash value of the given input.
+PARAMETER   : char*  str : It in the pointer to the input string which is needed to hashed.
+RETURN      : Returns the hash value of the input string.
+*/
+
 unsigned long djb2(char* str) 
 {
     unsigned long hash = 5381;
@@ -328,11 +335,21 @@ unsigned long djb2(char* str)
     return hash;
 }
 
+/*
+FUNCTION    : void insertTheParcel()
+DESCRIPTION : This function inserts the new parcel in the BST on basis of the weight
+PARAMETER   : Parcel** root     : It is a double pointer which root the node of BST and is updated if the new root node is generated or created.
+              char* destination : A string representing the destination of the parcel and it also duplicate the string to store in the new node.
+              int weight        : It is an integer which represents the weight of the parcel and it also determine the position of the new node in the tree.
+              float value       : It is a float value representing the value of the parcel and this value is store in the new node.
+RETURN      : None
+*/
+
 void insertTheParcel(Parcel** root, char* destination, int weight, float value) 
 {
     if (*root == NULL) 
     {
-        *root = (Parcel*)malloc(sizeof(Parcel));
+        *root = new Parcel;
         (*root)->destination = strdup(destination);
         (*root)->weight = weight;
         (*root)->value = value;
@@ -350,6 +367,13 @@ void insertTheParcel(Parcel** root, char* destination, int weight, float value)
     }
 }
 
+/*
+FUNCTION    : void displayTheParcels() 
+DESCRIPTION : This function traverses a binary tree of parcels and displays their details.
+PARAMETER   : Parcel* root : Pointer to the root node of the binary tree containing parcels.
+RETURN      : void
+*/
+
 void displayTheParcels(Parcel* root) 
 {
     if (root != NULL) 
@@ -359,6 +383,15 @@ void displayTheParcels(Parcel* root)
         displayTheParcels(root->right);
     }
 }
+
+/*
+FUNCTION    : void displayTheParcelsByWeight()
+DESCRIPTION : This function displays parcels which are based on on their weight, either greater than or less than specified weight, depending on the higher 
+PARAMETER   : Parcel* root : It is a pointer to the root of the parcel binary tree.
+              int weight   : The weight to compare against. 
+              int higher   : A flag which indicates whether to display higher weight parcels or lower weight parcels.
+RETURN      : void
+*/
 
 void displayTheParcelsByWeight(Parcel* root, int weight, int higher) 
 {
@@ -376,6 +409,15 @@ void displayTheParcelsByWeight(Parcel* root, int weight, int higher)
 
 }
 
+/*
+FUNCTION    : displayTheTotalLoadAndValuation()
+DESCRIPTION : This function calculates the total weight and value of all parcelsin a Binary tree by traversing through the tree.
+PARAMETER   : Parcel* root      : Pointer to the root node of the binary tree of the parcels.
+              int* totalWeigh   : Pointer to the integer which stores the accumulated total weight of the parcels.
+              float* totalValue : Pointer to the float which stores the accumulated total value of the parcels.
+RETURN      : void
+*/
+
 void displayTheTotalLoadAndValuation(Parcel* root, int* totalWeight, float* totalValue) 
 {
     if (root != NULL) 
@@ -387,6 +429,16 @@ void displayTheTotalLoadAndValuation(Parcel* root, int* totalWeight, float* tota
         displayTheTotalLoadAndValuation(root->right, totalWeight, totalValue);
     }
 }
+
+/*
+FUNCTION    : void displayTheCheapestAndMostExpensive()
+DESCRIPTION : This function traverses a binary tree of Parcels and identifies the cheapest and most expensive Parcels based on their value and it also 
+              updates the pointers to the cheapest and most expensive Parcels accordingly.
+PARAMETER   : Parcel* root       : A pointer to the root of the binary tree.
+              Parcel** cheapest  : A pointer to a pointer that will be updated to point to the cheapest Parcel found.
+              Parcel** expensive : A pointer to a pointer that will be updated to point to the most expensive Parcel found.
+RETURN      : void
+*/
 
 void displayTheCheapestAndMostExpensive(Parcel* root, Parcel** cheapest, Parcel** expensive) 
 {
@@ -407,6 +459,15 @@ void displayTheCheapestAndMostExpensive(Parcel* root, Parcel** cheapest, Parcel*
     }
 }
 
+/*
+FUNCTION    : void displayTheLightestAndHeaviest()
+DESCRIPTION : Recursively traverses a binary tree of Parcels to find and display the lightest and heaviest parcels.
+PARAMETER   : Parcel* root      : Pointer to the root of the binary tree of Parcels.
+              Parcel** lightest : Double pointer to the lightest Parcel found so far.
+              Parcel** heaviest : Double pointer to the heaviest Parcel found so far.
+RETURN      : void
+*/
+
 void displayTheLightestAndHeaviest(Parcel* root, Parcel** lightest, Parcel** heaviest) 
 {
     if (root != NULL) 
@@ -425,6 +486,13 @@ void displayTheLightestAndHeaviest(Parcel* root, Parcel** lightest, Parcel** hea
         displayTheLightestAndHeaviest(root->right, lightest, heaviest);
     }
 }
+
+/*
+FUNCTION    : freeTheTree()
+DESCRIPTION : Recursively frees all memory allocated for a binary tree including the nodes and their destination data.
+PARAMETER   : Parcel* root : A pointer to the root node of the tree which is to be freed.
+RETURN      : void
+*/
 
 void freeTheTree(Parcel* root) 
 {
