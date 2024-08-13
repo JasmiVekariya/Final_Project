@@ -110,7 +110,6 @@ int main(void)
                 printf("The country name %s is not found in the list.\n", country);
             }
 
-            displayTheParcels(hashTable[hashIndex]);
             break;
         }
         case 2:
@@ -160,13 +159,25 @@ int main(void)
             {
             case 1:
             {
+                int error = 0;
                 
                 displayTheParcelsByWeight(hashTable[hashIndex], searchWeight, 1); // Assuming higher weights
+                if (searchWeight > 50000)
+                {
+                    printf("no specific of the weight found\n");
+
+                }
                 break;
             }
             case 2:
             {
+                int error = 0;
                 displayTheParcelsByWeight(hashTable[hashIndex], searchWeight, 0); // Assuming lower weights
+                if (searchWeight < 100 )
+                {
+                    printf("no specific of the weight found\n");
+
+                }
                 break;
             }
             default:
@@ -321,8 +332,7 @@ void insertTheParcel(Parcel** root, char* destination, int weight, float value)
 {
     if (*root == NULL) 
     {
-       // *root = (Parcel*)malloc(sizeof(Parcel));
-        *root = new Parcel;
+        *root = (Parcel*)malloc(sizeof(Parcel));
         (*root)->destination = strdup(destination);
         (*root)->weight = weight;
         (*root)->value = value;
@@ -352,21 +362,18 @@ void displayTheParcels(Parcel* root)
 
 void displayTheParcelsByWeight(Parcel* root, int weight, int higher) 
 {
-    if (root != NULL) 
+    int error = 0;
+    if (root != NULL)
     {
         displayTheParcelsByWeight(root->left, weight, higher);
-        if ((higher && root->weight > weight) || (!higher && root->weight < weight)) 
+        if ((higher && root->weight > weight) || (!higher && root->weight < weight))
         {
             printf("Destination: %s, Weight: %d, Value: %.2f\n", root->destination, root->weight, root->value);
+            error = 1;
         }
-
         displayTheParcelsByWeight(root->right, weight, higher);
     }
-    else
-    {
-        printf("no specific of the weight found");
-        exit(EXIT_FAILURE);
-    }
+
 }
 
 void displayTheTotalLoadAndValuation(Parcel* root, int* totalWeight, float* totalValue) 
